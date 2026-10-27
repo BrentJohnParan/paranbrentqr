@@ -1,18 +1,36 @@
+
 export const COLORS = {
-  primary: '#6366F1',
-  background: '#0B1020',
-  card: '#111827',
-  textPrimary: '#F8FAFC',
-  textSecondary: '#CBD5E1',
-  textOnPrimary: '#FFFFFF',
-  surface: '#172033',
-  border: '#26344D',
-  shadow: '#050816',
-  warning: '#FACC15',
-  success: '#22C55E',
-  danger: '#F43F5E',
-  accent: '#06B6D4',
-  magenta: '#A855F7',
-  cardBorderNeon: '#6366F133',
-  muted: '#94A3B8',
+  // Primary brand — forest green
+  primary: '#739875',
+  background: '#0B100D',
+  card: '#141C16',
+
+  // Typography
+  textPrimary: '#F0F0E5',
+  textSecondary: '#BAC5B8',
+  textOnPrimary: '#0B100D',
+
+  // Surfaces and borders
+  surface: '#19231B',
+  border: '#304033',
+  shadow: '#050805',
+
+  // Status colors
+  warning: '#D6B56D',
+  success: '#8DBB83',
+  danger: '#E58B80',
+
+  // Nature-inspired accents
+  accent: '#A5C5A0',
+  magenta: '#967A5A',
+  cardBorderNeon: '#73987555',
+  muted: '#89968A',
+
+  // Additional earthy colors
+  forest: '#243B28',
+  deepForest: '#101810',
+  moss: '#526F45',
+  sage: '#A5C5A0',
+  earth: '#72563C',
+  cream: '#D9D3BC',
 } as const;

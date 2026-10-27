@@ -1,4 +1,12 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+
+import { useEffect, useRef } from 'react';
+import {
+  Animated,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/colors';
 
@@ -18,59 +26,104 @@ export default function AppButton({
   disabled,
 }: AppButtonProps) {
   const isPrimary = theme === 'primary';
+  const pulse = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (!isPrimary || disabled) {
+      pulse.stopAnimation();
+      pulse.setValue(0);
+      return;
+    }
+
+    const animation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, {
+          toValue: 1,
+          duration: 1400,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulse, {
+          toValue: 0,
+          duration: 1400,
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+
+    animation.start();
+    return () => animation.stop();
+  }, [isPrimary, disabled, pulse]);
+
+  const glowOpacity = pulse.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.15, 0.65],
+  });
+
   return (
-    <Pressable
-      onPress={onPress}
-      disabled={disabled}
-      style={({ pressed }) => [
-        styles.buttonInner,
-        isPrimary ? styles.primaryFill : styles.secondaryFill,
-        pressed && styles.pressed,
-        disabled && styles.disabled,
-      ]}
-    >
-      <View style={styles.row}>
-        <Ionicons
-          name={icon}
-          size={20}
-          color={isPrimary ? COLORS.textOnPrimary : COLORS.textPrimary}
+    <View style={styles.wrapper}>
+      {isPrimary && !disabled && (
+        <Animated.View
+          pointerEvents="none"
+          style={[styles.glow, { opacity: glowOpacity }]}
         />
-        <Text style={[styles.label, isPrimary && styles.labelPrimary]}>
-          {title}
-        </Text>
-      </View>
-    </Pressable>
+      )}
+
+      <Pressable
+        onPress={onPress}
+        disabled={disabled}
+        style={({ pressed }) => [
+          styles.button,
+          isPrimary ? styles.primary : styles.secondary,
+          pressed && styles.pressed,
+          disabled && styles.disabled,
+        ]}
+      >
+        <View style={styles.row}>
+          <Ionicons
+            name={icon}
+            size={20}
+            color={isPrimary ? COLORS.textOnPrimary : COLORS.textPrimary}
+          />
+          <Text style={[styles.label, isPrimary && styles.primaryLabel]}>
+            {title}
+          </Text>
+        </View>
+      </Pressable>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  buttonInner: {
+  wrapper: {
+    width: '100%',
+    position: 'relative',
+    borderRadius: 14,
+  },
+  glow: {
+    position: 'absolute',
+    top: -5,
+    left: -5,
+    right: -5,
+    bottom: -5,
+    borderRadius: 19,
+    backgroundColor: '#8FCF88',
+  },
+  button: {
     borderRadius: 14,
     paddingVertical: 16,
     paddingHorizontal: 16,
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
+    borderWidth: 1,
   },
-  primaryFill: {
+  primary: {
     backgroundColor: COLORS.primary,
-    borderWidth: 1,
-    borderColor: '#A78BFA',
-    shadowColor: '#8B5CF6',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.55,
-    shadowRadius: 12,
-    elevation: 8,
+    borderColor: COLORS.sage,
   },
-  secondaryFill: {
-    backgroundColor: '#151022CC',
-    borderWidth: 1,
-    borderColor: COLORS.cardBorderNeon,
-    shadowColor: '#8B5CF6',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.18,
-    shadowRadius: 6,
-    elevation: 2,
+  secondary: {
+    backgroundColor: COLORS.surface,
+    borderColor: COLORS.border,
   },
   row: {
     flexDirection: 'row',
@@ -82,7 +135,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: COLORS.textPrimary,
   },
-  labelPrimary: {
+  primaryLabel: {
     fontWeight: '700',
     color: COLORS.textOnPrimary,
   },
